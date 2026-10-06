@@ -2156,6 +2156,14 @@
               <select id="packageSelect" class="form-select" onchange="handlePackageChange()"></select>
             </div>
 
+            <!-- DROPDOWN PILIH MEMBER (untuk Fankit) -->
+            <div class="form-group" id="memberGroup" style="display: none">
+              <label for="memberSelect" id="memberLabel">3. Pilih Member:</label>
+              <select id="memberSelect" class="form-select" onchange="handleMemberChange()">
+                <option value="">-- Pilih Member --</option>
+              </select>
+            </div>
+
             <!-- KOTAK PILIHAN MODEL -->
             <div class="form-group" id="modelGroup" style="display: none">
               <label for="modelSelect" id="modelLabel">3. Pilih Model:</label>
@@ -2462,6 +2470,38 @@
       },
     };
 
+    // ================== DATA MEMBER FANKIT ==================
+    const fankitMembers = {
+      "Fankit Paket A": ["James", "Martin", "Seonghyeon", "Juhoon", "Keonho"],
+      "Fankit Paket B": ["James", "Martin", "Seonghyeon", "Juhoon", "Keonho"],
+      "Fankit Paket C": ["James", "Martin", "Seonghyeon", "Juhoon", "Keonho"],
+    };
+
+    // Gambar per member per paket
+    const fankitMemberImages = {
+      "Fankit Paket A": {
+        "James": "fankit paket A/paketa-james.png",
+        "Martin": "fankit paket A/paketa-martin.png",
+        "Seonghyeon": "fankit paket A/paketa-sean.png",
+        "Juhoon": "fankit paket A/paketa-juhoon.png",
+        "Keonho": "fankit paket A/paketa-keonho.png",
+      },
+      "Fankit Paket B": {
+        "James": "fankit paket B/paketb-james.png",
+        "Martin": "fankit paket B/paketb-martin.png",
+        "Seonghyeon": "fankit paket B/paketb-sean.png",
+        "Juhoon": "fankit paket B/paketb-juhoon.png",
+        "Keonho": "fankit paket B/paketb-keonho.png",
+      },
+      "Fankit Paket C": {
+        "James": "fankit paket C/paketc-james.png",
+        "Martin": "fankit paket C/paketc-martin.png",
+        "Seonghyeon": "fankit paket C/paketc-sean.png",
+        "Juhoon": "fankit paket C/paketc-juhoon.png",
+        "Keonho": "fankit paket C/paketc-keonho.png",
+      },
+    };
+
     const holderDetails = {
       "Card Holder Paket A — Model #1 G-FF-B19": {
         title: "Card Holder Paket A — #1 (G-FF-B19)",
@@ -2631,14 +2671,66 @@
       "Paket B": [],
     };
 
+    const packageOptionsMap = {
+      Fankit: [
+        { value: "Fankit Paket A", label: "Fankit Paket A — Cortis GreenGreen (Rp7.000)" },
+        { value: "Fankit Paket B", label: "Fankit Paket B — Cortis GreenGreen (Rp7.000)" },
+        { value: "Fankit Paket C", label: "Fankit Paket C — Cortis GreenGreen (Rp7.000)" },
+      ],
+      "Card Holder": [
+        { value: "Paket A", label: "Paket A — Acrylic Deco (20 model tersedia)" },
+      ],
+      "Bundling (Card Holder + Pin Custom)": [
+        {
+          value: "Bundling 1",
+          label:
+            "Bluvy Bundling Version — Card Holder + Pin Custom + Free Photocard (Rp20.000)",
+        },
+      ],
+    };
+
+    function handleMemberChange() {
+      updatePreview();
+    }
+
+    function handleFankitPackageChange() {
+      const packageSelect = document.getElementById("packageSelect");
+      const memberGroup = document.getElementById("memberGroup");
+      const memberSelect = document.getElementById("memberSelect");
+
+      if (!packageSelect || !memberGroup || !memberSelect) return;
+
+      const selectedPackage = packageSelect.value;
+      const members = fankitMembers[selectedPackage] || [];
+
+      if (members.length > 0) {
+        memberGroup.style.display = "block";
+        document.getElementById("memberLabel").innerText = "3. Pilih Member:";
+        memberSelect.innerHTML = '<option value="">-- Pilih Member --</option>';
+        members.forEach((member) => {
+          const option = document.createElement("option");
+          option.value = member;
+          option.innerText = member;
+          memberSelect.appendChild(option);
+        });
+      } else {
+        memberGroup.style.display = "none";
+        memberSelect.innerHTML = "";
+      }
+    }
+
     function updatePreview() {
       const productType = document.getElementById("productType").value;
       const note = document.getElementById("customNote").value.trim();
       const packageSelect = document.getElementById("packageSelect");
       const modelSelect = document.getElementById("modelSelect");
+      const memberSelect = document.getElementById("memberSelect");
       const selectedPackage = packageSelect ? packageSelect.value : "";
       const selectedModel = modelSelect && modelSelect.style.display !== "none"
         ? modelSelect.value
+        : "";
+      const selectedMember = memberSelect && memberSelect.style.display !== "none"
+        ? memberSelect.value
         : "";
 
       const previewImage = document.getElementById("previewImage");
@@ -2661,11 +2753,23 @@
       ) {
         const detail = fankitDetails[selectedPackage];
         previewTitle.textContent = detail.title;
-        previewSpecs.innerHTML = `<strong>Spesifikasi:</strong> ${detail.specs}`;
+
+        if (selectedMember) {
+          previewSpecs.innerHTML = `<strong>Spesifikasi:</strong> ${detail.specs}<br><strong>Member:</strong> ${selectedMember}`;
+          previewGroup.textContent = `Fankit — ${selectedMember}`;
+
+          if (
+            fankitMemberImages[selectedPackage] &&
+            fankitMemberImages[selectedPackage][selectedMember]
+          ) {
+            previewImage.src = fankitMemberImages[selectedPackage][selectedMember];
+          }
+        } else {
+          previewSpecs.innerHTML = `<strong>Spesifikasi:</strong> ${detail.specs}`;
+          previewGroup.textContent = "Fankit Package Series — Pilih member dulu";
+        }
+
         previewPrice.textContent = detail.price;
-        previewGroup.textContent = "Fankit Package Series";
-        previewImage.src =
-          "https://down-id.img.susercontent.com/file/id-11134207-822wn-mpajd4fzfa4i9e.webp";
       } else if (
         productType === "Card Holder" &&
         selectedModel &&
@@ -2697,36 +2801,22 @@
       }
     }
 
-    const packageOptionsMap = {
-      Fankit: [
-        { value: "Fankit Paket A", label: "Fankit Paket A — Cortis GreenGreen (Rp7.000)" },
-        { value: "Fankit Paket B", label: "Fankit Paket B — Cortis GreenGreen (Rp7.000)" },
-        { value: "Fankit Paket C", label: "Fankit Paket C — Cortis GreenGreen (Rp7.000)" },
-      ],
-      "Card Holder": [
-        { value: "Paket A", label: "Paket A — Acrylic Deco (20 model tersedia)" },
-      ],
-      "Bundling (Card Holder + Pin Custom)": [
-        {
-          value: "Bundling 1",
-          label:
-            "Bluvy Bundling Version — Card Holder + Pin Custom + Free Photocard (Rp20.000)",
-        },
-      ],
-    };
-
     function handleProductTypeChange() {
       const productType = document.getElementById("productType").value;
       const packageGroup = document.getElementById("packageGroup");
       const packageSelect = document.getElementById("packageSelect");
       const modelGroup = document.getElementById("modelGroup");
       const modelSelect = document.getElementById("modelSelect");
+      const memberGroup = document.getElementById("memberGroup");
+      const memberSelect = document.getElementById("memberSelect");
       const pinPhotoInfo = document.getElementById("pinPhotoInfo");
       const noteLabel = document.getElementById("noteLabel");
       const customNote = document.getElementById("customNote");
 
       modelGroup.style.display = "none";
       modelSelect.innerHTML = "";
+      memberGroup.style.display = "none";
+      memberSelect.innerHTML = '<option value="">-- Pilih Member --</option>';
 
       if (productType === "Custom Pin") {
         packageGroup.style.display = "none";
@@ -2734,7 +2824,7 @@
         pinPhotoInfo.style.display = "block";
         noteLabel.innerText = "3. Catatan Pesanan:";
         customNote.placeholder =
-          "Contoh: Ukuran 44mm Glossy / Kirim 2 foto berbeda / dll";
+          "Catatan pesanan";
       } else {
         packageGroup.style.display = "block";
 
@@ -2749,18 +2839,17 @@
         if (productType === "Fankit") {
           document.getElementById("packageLabel").innerText =
             "2. Pilih Paket Fankit:";
-          customNote.placeholder =
-            "Contoh: Keonho (pilih member yang kamu inginkan)";
+          customNote.placeholder = "Catatan pesanan";
         } else if (productType === "Card Holder") {
           document.getElementById("packageLabel").innerText =
             "2. Pilih Paket Card Holder:";
           customNote.placeholder =
-            "Contoh: mau tambah beaded lanyard warna pink / dll";
+            "Catatan pesanan";
         } else if (productType === "Bundling (Card Holder + Pin Custom)") {
           document.getElementById("packageLabel").innerText =
             "2. Pilih Paket Bundling:";
           customNote.placeholder =
-            "Contoh: Keonho (untuk photocard) + custom foto pin";
+            "Catatan Pesanan";
         }
 
         packageSelect.innerHTML = "";
@@ -2773,9 +2862,10 @@
           });
         }
 
-        // PERBAIKAN: Panggil setelah packageSelect diisi opsi
         if (productType === "Card Holder") {
           handleCardHolderPackageChange();
+        } else if (productType === "Fankit") {
+          handleFankitPackageChange();
         }
       }
       updatePreview();
@@ -2814,6 +2904,8 @@
       const productType = document.getElementById("productType").value;
       if (productType === "Card Holder") {
         handleCardHolderPackageChange();
+      } else if (productType === "Fankit") {
+        handleFankitPackageChange();
       }
       updatePreview();
     }
@@ -2826,6 +2918,7 @@
       productType,
       packageValue = "",
       defaultNote = "",
+      memberValue = "",
     ) {
       const productTypeSelect = document.getElementById("productType");
       if (productTypeSelect) {
@@ -2848,7 +2941,16 @@
           }
           if (productType === "Card Holder") {
             handleCardHolderPackageChange();
+          } else if (productType === "Fankit") {
+            handleFankitPackageChange();
           }
+        }
+      }
+
+      if (memberValue) {
+        const memberSelect = document.getElementById("memberSelect");
+        if (memberSelect) {
+          memberSelect.value = memberValue;
         }
       }
 
@@ -2865,32 +2967,31 @@
       }
     }
 
-    // ===================================================================
-    // GENERATE PESAN WA — versi rapi & profesional
-    // ===================================================================
     function generateCustomOrder(e) {
       e.preventDefault();
       const productType = document.getElementById("productType").value;
       const note = document.getElementById("customNote").value.trim();
       const packageSelect = document.getElementById("packageSelect");
       const modelSelect = document.getElementById("modelSelect");
+      const memberSelect = document.getElementById("memberSelect");
       const packageName = packageSelect ? packageSelect.value : productType;
       const selectedModel =
         modelSelect && modelSelect.style.display !== "none"
           ? modelSelect.value
           : "";
+      const selectedMember =
+        memberSelect && memberSelect.style.display !== "none"
+          ? memberSelect.value
+          : "";
 
-      // Helper buat format harga
       const formatRp = (str) => str.replace("Rp", "Rp ").replace(".", ".");
 
-      // ============ HEADER ============
       let msg = `Halo *Bluvy K-Merch* 👋\n\n`;
       msg += `Saya mau order merchandise berikut:\n\n`;
       msg += `━━━━━━━━━━━━━━━━━━━━\n`;
       msg += `📦 *DETAIL PESANAN*\n`;
       msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
 
-      // ============ BODY ============
       if (productType === "Custom Pin") {
         msg += `*Produk*     : Pin Custom Foto\n`;
         msg += `*Harga*      : Rp 5.000 / pcs\n`;
@@ -2900,6 +3001,9 @@
         const detail = fankitDetails[packageName];
         msg += `*Produk*     : Fankit Album GreenGreen\n`;
         msg += `*Paket*      : ${packageName.replace("Fankit ", "")}\n`;
+        if (selectedMember) {
+          msg += `*Member*     : ${selectedMember}\n`;
+        }
         if (detail) {
           msg += `*Harga*      : ${formatRp(detail.price)}\n`;
           msg += `*Isi Paket*  : ${detail.specs.replace("Isi: ", "")}\n`;
@@ -2926,7 +3030,6 @@
         msg += `*Custom*     : Foto Pin + pilihan Photocard (dikirim di chat ini)\n`;
       }
 
-      // ============ CATATAN ============
       if (note) {
         msg += `\n━━━━━━━━━━━━━━━━━━━━\n`;
         msg += `📝 *CATATAN TAMBAHAN*\n`;
@@ -2934,7 +3037,6 @@
         msg += `"${note}"\n`;
       }
 
-      // ============ FOOTER ============
       msg += `\n━━━━━━━━━━━━━━━━━━━━\n`;
       msg += `_Sent via Bluvy Web Order_`;
 
