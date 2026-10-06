@@ -2046,8 +2046,6 @@
           </div>
         </div>
 
-        <!-- CARD HOLDER PAKET B SUDAH DIHAPUS -->
-
         <!-- PIN CUSTOM -->
         <div class="poster-card" data-category="pin" data-theme="custom" data-group="custom">
           <div class="card-poster-header">
@@ -2284,25 +2282,23 @@
     </div>
   </section>
 
-    <footer class="footer" id="kontak">
-      <div class="container">
-        <div class="footer-content">
-          <div>
-            <div class="brand-logo" style="margin-bottom: 8px">
-              <div class="logo-box">Bluvy</div>
-              <span class="tag">K-MERCH &amp; STUDIO</span>
-            </div>
-            <p
-              style="
+  <footer class="footer" id="kontak">
+    <div class="container">
+      <div class="footer-content">
+        <div>
+          <div class="brand-logo" style="margin-bottom: 8px">
+            <div class="logo-box">Bluvy</div>
+            <span class="tag">K-MERCH &amp; STUDIO</span>
+          </div>
+          <p style="
                 font-size: 0.85rem;
                 color: var(--ink-sub);
                 max-width: 360px;
-              "
-            >
-              Spesialis Photocard Holder ready stock, Pin Custom Foto, serta
-              Cortis Fankit lengkap!
-            </p>
-          </div>
+              ">
+            Spesialis Photocard Holder ready stock, Pin Custom Foto, serta
+            Cortis Fankit lengkap!
+          </p>
+        </div>
 
         <div class="footer-socials">
           <a href="https://wa.me/6285939059177?text=Halo%20Bluvy%20K-Merch" target="_blank" class="social-link">
@@ -2682,15 +2678,6 @@
         previewGroup.textContent = "Card Holder Collection";
         previewImage.src = detail.image;
       } else if (
-        productType === "Card Holder" &&
-        selectedPackage === "Paket B"
-      ) {
-        previewTitle.textContent = "Card Holder Paket B";
-        previewSpecs.innerHTML = `<strong>Spesifikasi:</strong> Model Paket B akan segera hadir. Pantau terus ya!`;
-        previewPrice.textContent = "Rp17.000";
-        previewGroup.textContent = "Card Holder Collection";
-        previewImage.src = "card holder/G-FF-B47.jpeg";
-      } else if (
         productType === "Bundling (Card Holder + Pin Custom)" &&
         selectedPackage
       ) {
@@ -2786,6 +2773,7 @@
           });
         }
 
+        // PERBAIKAN: Panggil setelah packageSelect diisi opsi
         if (productType === "Card Holder") {
           handleCardHolderPackageChange();
         }
@@ -2795,10 +2783,15 @@
 
     function handleCardHolderPackageChange() {
       const packageSelect = document.getElementById("packageSelect");
-      const selectedPackage = packageSelect ? packageSelect.value : "";
       const modelGroup = document.getElementById("modelGroup");
       const modelSelect = document.getElementById("modelSelect");
 
+      if (!packageSelect || !modelGroup || !modelSelect) {
+        console.warn("Element Card Holder tidak ditemukan");
+        return;
+      }
+
+      const selectedPackage = packageSelect.value;
       const models = modelOptionsMap[selectedPackage] || [];
 
       if (models.length > 0) {
@@ -2923,7 +2916,6 @@
           msg += `*Produk*     : Card Holder\n`;
           msg += `*Paket*      : ${packageName}\n`;
           msg += `*Harga*      : Rp 17.000\n`;
-          msg += `*Status*     : Model akan segera hadir\n`;
         }
       } else if (productType === "Bundling (Card Holder + Pin Custom)") {
         const bundlingData = productData["Bundling (Card Holder + Pin Custom)"];
@@ -3052,11 +3044,7 @@
 
       let carouselCategory = null;
       if (productType === "Card Holder" || iconType === "holder") {
-        if (title.includes("Paket B")) {
-          carouselCategory = "Holder_B";
-        } else {
-          carouselCategory = "Holder_A";
-        }
+        carouselCategory = "Holder_A";
       } else if (
         productType === "Fankit" ||
         iconType === "fankit" ||
