@@ -3532,6 +3532,7 @@
 
       function generateCustomOrder(e) {
         e.preventDefault();
+        const customerName = document.getElementById("customerName").value.trim();
         const productType = document.getElementById("productType").value;
         const note = document.getElementById("customNote").value.trim();
         const packageSelect = document.getElementById("packageSelect");
@@ -3550,7 +3551,7 @@
         const formatRp = (str) => str.replace("Rp", "Rp ").replace(".", ".");
 
         let msg = `Halo *Bluvy* \n\n`;
-        msg += `Saya mau order merchandise berikut:\n\n`;
+        msg += `Saya *${customerName}* mau order merchandise berikut:\n\n`;
         msg += `━━━━━━━━━━━━━━━━━━━━\n`;
         msg += ` *DETAIL PESANAN*\n`;
         msg += `━━━━━━━━━━━━━━━━━━━━\n\n`;
