@@ -3281,7 +3281,21 @@
         }
       }
 
+      function renumberFormLabels() {
+        const groups = document.querySelectorAll("#customForm .form-group");
+        let n = 1;
+        groups.forEach((group) => {
+          if (group.style.display === "none") return;
+          const label = group.querySelector("label");
+          if (!label) return;
+          const text = label.textContent.trim().replace(/^\d+\.\s*/, "");
+          label.textContent = `${n}. ${text}`;
+          n++;
+        });
+      }
+
       function updatePreview() {
+        renumberFormLabels();
         const productType = document.getElementById("productType").value;
         const note = document.getElementById("customNote").value.trim();
         const packageSelect = document.getElementById("packageSelect");
